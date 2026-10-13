@@ -1,0 +1,39 @@
+# Node
+node_modules/
+dist/
+build/
+coverage/
+*.log
+logs/
+
+# Environment
+.env
+.env.*
+!.env.example
+!.env.development
+
+# Keys (never commit)
+keys/
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# React Native
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/.expo/
+
+# Docker volumes
+postgres_data/
+redis_data/
+
+# Temp
+/tmp/
+*.tmp

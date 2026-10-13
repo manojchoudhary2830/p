@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /cities/
+Allow: /properties/
+Disallow: /tenant-dashboard
+Disallow: /owner-dashboard
+
+Sitemap: /api/sitemap.xml

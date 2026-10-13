@@ -1,0 +1,229 @@
+version: '3.9'
+
+networks:
+  pgbooking_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+  prometheus_data:
+  grafana_data:
+
+services:
+  # ─────────────────────────────────────────────
+  # PostgreSQL 16 with PostGIS
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: pgbooking_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pgbooking_dev
+      POSTGRES_USER: pgbooking_user
+      POSTGRES_PASSWORD: pgbooking_secret_dev
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts/init.sh:/docker-entrypoint-initdb.d/00-init.sh:ro
+      - ./database/migrations:/database/migrations:ro
+      - ./database/seeds:/database/seeds:ro
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgbooking_user -d pgbooking_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c work_mem=4MB
+      -c log_min_duration_statement=1000
+      -c log_statement=none
+
+  # ─────────────────────────────────────────────
+  # Redis 7 Cluster (single-node dev mode)
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: pgbooking_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./infrastructure/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.11
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # Backend API
+  # ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.dev
+    container_name: pgbooking_backend
+    restart: unless-stopped
+    env_file:
+      - ./apps/backend/.env.development
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Node.js debugger
+    volumes:
+      - ./apps/backend/src:/app/src:cached
+      - ./apps/backend/tests:/app/tests:cached
+      - /app/node_modules
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.20
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: npm run dev
+
+  # ─────────────────────────────────────────────
+  # NGINX Reverse Proxy (dev mode)
+  # ─────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: pgbooking_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infrastructure/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.30
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # PgAdmin (dev tooling)
+  # ─────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgbooking_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgbooking.dev
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_dev_secret
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.40
+    profiles:
+      - tools
+
+  # ─────────────────────────────────────────────
+  # Prometheus (monitoring)
+  # ─────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pgbooking_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./infrastructure/monitoring/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.50
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    profiles:
+      - monitoring
+
+  # ─────────────────────────────────────────────
+  # Grafana (dashboards)
+  # ─────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pgbooking_grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: grafana_dev_secret
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    ports:
+      - "3001:3000"
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.51
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+  # ─────────────────────────────────────────────
+  # LocalStack (S3 emulation for dev)
+  # ─────────────────────────────────────────────
+  localstack:
+    image: localstack/localstack:latest
+    container_name: pgbooking_localstack
+    restart: unless-stopped
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: s3
+      AWS_DEFAULT_REGION: ap-south-1
+      PERSISTENCE: 1
+    volumes:
+      - ./infrastructure/scripts/localstack-init.sh:/etc/localstack/init/ready.d/init.sh:ro
+    networks:
+      pgbooking_net:
+        ipv4_address: 172.28.0.60
+    profiles:
+      - tools

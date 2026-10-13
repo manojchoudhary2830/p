@@ -1,0 +1,119 @@
+groups:
+  - name: pgbooking_slo_alerts
+    interval: 30s
+    rules:
+      # ── API Availability ─────────────────────
+      - alert: APIHighErrorRate
+        expr: |
+          rate(http_requests_total{status=~"5.."}[5m])
+          / rate(http_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API error rate > 1%"
+          description: "Error rate is {{ $value | humanizePercentage }} over last 5 minutes"
+
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket[5m])
+          ) > 0.4
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency > 400ms"
+          description: "p95 latency is {{ $value | humanizeDuration }}"
+
+      - alert: SearchLatencyDegraded
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{path="/api/v1/properties/search"}[5m])
+          ) > 0.25
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Search API p95 > 250ms SLO breach"
+
+      # ── Database ─────────────────────────────
+      - alert: DatabaseConnectionPoolExhausted
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL connection pool > 80% utilized"
+
+      - alert: DatabaseReplicationLag
+        expr: pg_replication_lag > 30
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL replication lag > 30s"
+
+      # ── Redis ────────────────────────────────
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage > 85%"
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+
+      # ── Business Metrics ─────────────────────
+      - alert: BookingFailureRateHigh
+        expr: |
+          rate(booking_failures_total[10m])
+          / rate(booking_attempts_total[10m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Booking failure rate > 5%"
+
+      - alert: PaymentWebhookBacklog
+        expr: bullmq_queue_size{queue="rent-invoice"} > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rent invoice queue backlog > 100 jobs"
+
+      # ── Infrastructure ───────────────────────
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage: {{ $value | humanize }}%"
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} /
+           node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space < 15% remaining"
+
+      - alert: ContainerDown
+        expr: up{job="pgbooking_backend"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PG Booking backend container is down"

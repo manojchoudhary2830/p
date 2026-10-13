@@ -1,0 +1,364 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/pgbooking-backend
+  NODE_VERSION: '20.11'
+
+# ─────────────────────────────────────────────
+# Jobs
+# ─────────────────────────────────────────────
+
+jobs:
+  # ── 1. Lint & Type Check ────────────────────
+  lint:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npm run typecheck
+
+      - name: ESLint
+        run: npm run lint || true  # non-blocking for now, enable strict in v2
+
+  # ── 2. Unit Tests ───────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate RSA test keys
+        run: |
+          mkdir -p keys
+          openssl genrsa -out keys/private.pem 2048
+          openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+
+      - name: Run unit tests
+        env:
+          NODE_ENV: test
+          JWT_PRIVATE_KEY_PATH: ./keys/private.pem
+          JWT_PUBLIC_KEY_PATH: ./keys/public.pem
+          DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+          ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef
+          RAZORPAY_KEY_ID: rzp_test_key
+          RAZORPAY_KEY_SECRET: test_razorpay_secret_32chars_long_xx
+          RAZORPAY_WEBHOOK_SECRET: test_razorpay_secret_32chars_long_xx
+          TWILIO_ACCOUNT_SID: ACtest
+          TWILIO_AUTH_TOKEN: testtoken
+          TWILIO_PHONE_NUMBER: "+15005550006"
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_S3_BUCKET_KYC: test-kyc
+          AWS_S3_BUCKET_PROPERTIES: test-props
+          AWS_S3_BUCKET_MAINTENANCE: test-maint
+          FIREBASE_PROJECT_ID: test-project
+          FIREBASE_PRIVATE_KEY_ID: test-key-id
+          FIREBASE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7test\n-----END PRIVATE KEY-----\n"
+          FIREBASE_CLIENT_EMAIL: test@test-project.iam.gserviceaccount.com
+          FIREBASE_CLIENT_ID: "123456789"
+          SMTP_HOST: smtp.test.com
+          SMTP_USER: test
+          SMTP_PASSWORD: test
+          EMAIL_FROM: test@test.com
+        run: npm run test:unit -- --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: apps/backend/coverage/
+          retention-days: 7
+
+  # ── 3. Integration Tests ────────────────────
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4-alpine
+        env:
+          POSTGRES_DB: pgbooking_test
+          POSTGRES_USER: pgbooking_test
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pgbooking_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: apps/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate RSA test keys
+        run: |
+          mkdir -p keys
+          openssl genrsa -out keys/private.pem 2048
+          openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: postgresql://pgbooking_test:test_password@localhost:5432/pgbooking_test
+        run: |
+          for f in ../../database/migrations/*.sql; do
+            echo "Running migration: $f"
+            PGPASSWORD=test_password psql -h localhost -U pgbooking_test -d pgbooking_test -f "$f"
+          done
+
+      - name: Run integration tests
+        env:
+          NODE_ENV: test
+          SKIP_INTEGRATION: "false"
+          TEST_OTP: "123456"
+          DATABASE_URL: postgresql://pgbooking_test:test_password@localhost:5432/pgbooking_test
+          REDIS_URL: redis://localhost:6379
+          JWT_PRIVATE_KEY_PATH: ./keys/private.pem
+          JWT_PUBLIC_KEY_PATH: ./keys/public.pem
+          ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef
+          RAZORPAY_KEY_ID: rzp_test_key
+          RAZORPAY_KEY_SECRET: test_razorpay_secret_32chars_long_xx
+          RAZORPAY_WEBHOOK_SECRET: test_razorpay_secret_32chars_long_xx
+          TWILIO_ACCOUNT_SID: ACtest
+          TWILIO_AUTH_TOKEN: testtoken
+          TWILIO_PHONE_NUMBER: "+15005550006"
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_S3_BUCKET_KYC: test-kyc
+          AWS_S3_BUCKET_PROPERTIES: test-props
+          AWS_S3_BUCKET_MAINTENANCE: test-maint
+          AWS_ENDPOINT_URL: http://localhost:4566
+          FIREBASE_PROJECT_ID: test
+          FIREBASE_PRIVATE_KEY_ID: test
+          FIREBASE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvtest\n-----END PRIVATE KEY-----\n"
+          FIREBASE_CLIENT_EMAIL: test@test.iam.gserviceaccount.com
+          FIREBASE_CLIENT_ID: "123"
+          SMTP_HOST: localhost
+          SMTP_USER: test
+          SMTP_PASSWORD: test
+          EMAIL_FROM: test@test.com
+        run: npm run test:integration
+
+  # ── 4. Build Docker Image ───────────────────
+  build:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.BACKEND_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=,suffix=,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/backend
+          file: ./apps/backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # ── 5. Deploy to Staging ────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, integration-tests]
+    if: github.ref == 'refs/heads/staging'
+    environment:
+      name: staging
+      url: https://staging.pgbooking.in
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/pgbooking
+
+            # Pull latest image
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker pull ${{ env.BACKEND_IMAGE }}:staging
+
+            # Zero-downtime rolling update
+            IMAGE_TAG=staging docker compose -f docker-compose.prod.yml up -d --no-deps backend
+
+            # Run migrations via one-off postgres container (avoids exposing DB port)
+            docker run --rm \
+              --network pgbooking_prod \
+              -v /opt/pgbooking/database/migrations:/migrations:ro \
+              -v /opt/pgbooking/database/scripts/run_migrations.sh:/run_migrations.sh:ro \
+              -e DATABASE_URL="$STAGING_DATABASE_URL" \
+              postgres:16-alpine sh /run_migrations.sh
+
+            # Health check
+            sleep 15
+            curl -f https://staging.pgbooking.in/health || (echo "Health check failed" && exit 1)
+
+            echo "✅ Staging deployment complete"
+
+  # ── 6. Deploy to Production ─────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://api.pgbooking.in
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/pgbooking
+
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker pull ${{ env.BACKEND_IMAGE }}:latest
+
+            # Blue-green: start new instance before stopping old
+            IMAGE_TAG=latest docker compose -f docker-compose.prod.yml up -d \
+              --no-deps --scale backend=2 backend
+
+            sleep 20
+            curl -f https://api.pgbooking.in/health || (echo "Health check failed" && exit 1)
+
+            # Scale back to configured replicas
+            docker compose -f docker-compose.prod.yml up -d --no-deps backend
+
+            # Prune old images
+            docker image prune -f --filter "until=24h"
+
+            echo "✅ Production deployment complete"
+
+      - name: Notify on success
+        if: success()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "✅ *Production deployed* — `${{ github.sha }}` by ${{ github.actor }}",
+              "channel": "#deployments"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 *Production deploy FAILED* — `${{ github.sha }}` by ${{ github.actor }}",
+              "channel": "#deployments"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

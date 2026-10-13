@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: pgbooking-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    plan: free
+    region: singapore # or oregon / frankfurt
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: APP_NAME
+        value: NextGen PG Booking API
+      - key: DB_NAME
+        value: pgbooking
+      - key: MONGO_URL
+        sync: false # Set in Render Dashboard: mongodb+srv://<user>:<password>@cluster0.mongodb.net/pgbooking?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false # Set in Render Dashboard: https://your-pgbooking.vercel.app or https://your-pgbooking.netlify.app
+      - key: STORAGE_URL
+        value: /uploads
+      - key: BED_LOCK_TTL_MIN
+        value: "10"
+      - key: BOOST_PRICE_INR
+        value: "499"
+      - key: BOOST_DURATION_DAYS
+        value: "30"
+      - key: CANCEL_REFUND_FRACTION_AFTER_CONFIRM
+        value: "0.8"
+      - key: CANCEL_GRACE_DAYS
+        value: "2"
+      - key: SENDER_EMAIL
+        value: manoj.portfolio.website@gmail.com
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: EMERGENT_LLM_KEY
+        sync: false
