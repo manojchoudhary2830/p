@@ -107,14 +107,10 @@ export default function HomePage({ onOpenAi }) {
           </p>
 
           {/* Search Bar Container */}
-          <div className="glass-panel" style={{
+          <div className="glass-panel adaptive-search-bar" style={{
             maxWidth: '860px',
             margin: '0 auto',
             padding: '10px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            flexWrap: 'wrap',
           }}>
             {/* Search Input */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 240px', padding: '6px 12px' }}>
@@ -214,7 +210,7 @@ export default function HomePage({ onOpenAi }) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+        <div className="adaptive-cities-grid">
           {citiesList.map((city) => (
             <Link
               key={city.id}
@@ -334,7 +330,7 @@ export default function HomePage({ onOpenAi }) {
         borderBottom: '1px solid var(--border-glass)',
         padding: '60px 0',
       }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '30px' }}>
+        <div className="container adaptive-cities-grid">
           <div style={{ display: 'flex', gap: '16px' }}>
             <div style={{
               width: '46px',

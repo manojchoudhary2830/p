@@ -264,22 +264,313 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulseGlow 2s infinite ease-in-out;
 }
 
-/* Layout utilities */
+/* ──────────────────────────────────────────────────────────
+   Auto-Adaptive Responsive Design System
+   Optimized for: Mobile (<640px), Tablets (641-1024px), Monitors (>1024px)
+────────────────────────────────────────────────────────── */
+
+/* Responsive Container */
 .container {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
-/* Responsive grid */
-.grid-cards {
+@media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1480px;
+    padding: 0 32px;
+  }
+}
+
+/* ── 1. Property Cards Auto-Adaptive Grid ── */
+.grid-cards,
+.adaptive-grid-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
   gap: 24px;
 }
 
-@media (max-width: 768px) {
-  .grid-cards {
+@media (max-width: 640px) {
+  .grid-cards,
+  .adaptive-grid-cards {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid-cards,
+  .adaptive-grid-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .grid-cards,
+  .adaptive-grid-cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+}
+
+/* ── 2. Cities Showcase Auto-Adaptive Grid ── */
+.adaptive-cities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .adaptive-cities-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .adaptive-cities-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* ── 3. Detail Page Auto-Adaptive Grid ── */
+.adaptive-detail-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .adaptive-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ── 4. Photo Gallery Auto-Adaptive Grid ── */
+.adaptive-gallery-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  height: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 640px) {
+  .adaptive-gallery-grid {
+    grid-template-columns: 1fr;
+    height: 240px;
+    margin-bottom: 20px;
+  }
+  .adaptive-gallery-grid .gallery-secondary-images {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .adaptive-gallery-grid {
+    height: 300px;
+    gap: 10px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .adaptive-gallery-grid {
+    height: 440px;
+  }
+}
+
+/* ── 5. Hero Search Bar Auto-Adaptive Layout ── */
+.adaptive-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .adaptive-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px !important;
+    gap: 10px;
+  }
+  .adaptive-search-bar > div,
+  .adaptive-search-bar > select,
+  .adaptive-search-bar > button {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  .adaptive-search-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .adaptive-search-bar > div:first-child {
+    grid-column: span 2;
+  }
+  .adaptive-search-bar > button {
+    grid-column: span 2;
+  }
+}
+
+/* ── 6. Metrics & Stats Auto-Adaptive Grid ── */
+.adaptive-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .adaptive-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .adaptive-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* ── 7. Responsive Navigation Helpers ── */
+.nav-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.nav-mobile-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 960px) {
+  .nav-desktop-links,
+  .nav-desktop-actions {
+    display: none !important;
+  }
+  .nav-mobile-toggle {
+    display: flex !important;
+  }
+}
+
+.nav-mobile-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 0 10px 0;
+  border-top: 1px solid var(--border-glass);
+  margin-top: 14px;
+  animation: fadeInDown 0.25s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 8. Mobile Sticky Quick-Action Bar ── */
+.mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    background: rgba(17, 24, 39, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-glass);
+    padding: 12px 16px;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Add safe bottom padding so page content is never obscured by sticky bar */
+  .has-mobile-bottom-bar {
+    padding-bottom: 90px !important;
+  }
+}
+
+/* ── 9. Universal Visibility & Screen Classes ── */
+.hide-mobile {
+  display: block;
+}
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: block !important;
+  }
+  
+  /* Typography fine-tuning on mobile */
+  h1 {
+    font-size: clamp(1.8rem, 7vw, 2.4rem) !important;
+  }
+  h2 {
+    font-size: clamp(1.4rem, 5vw, 1.8rem) !important;
+  }
+  
+  /* Inputs touch friendly target */
+  .input-glass,
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+

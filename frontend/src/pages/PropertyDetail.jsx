@@ -169,7 +169,7 @@ export default function PropertyDetail({ onOpenAuth }) {
   );
 
   return (
-    <div className="container" style={{ padding: '30px 20px 80px 20px' }}>
+    <div className="container has-mobile-bottom-bar" style={{ padding: '30px 20px 80px 20px' }}>
       {/* 
         CRITICAL SECURITY AUDIT FIX (p.md lines 120-124):
         Escape </ in JSON-LD output to prevent script tag injection breakout
@@ -229,22 +229,14 @@ export default function PropertyDetail({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* Gallery Section */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr',
-        gap: '14px',
-        height: '380px',
-        marginBottom: '36px',
-        borderRadius: '16px',
-        overflow: 'hidden',
-      }}>
+      {/* Auto-Adaptive Gallery Section */}
+      <div className="adaptive-gallery-grid">
         <img
           src={property.cover_image}
           alt={property.title}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '14px' }}>
+        <div className="gallery-secondary-images" style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '14px' }}>
           {(property.images || []).slice(1, 3).map((img, idx) => (
             <img
               key={idx}
@@ -256,8 +248,8 @@ export default function PropertyDetail({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* Main Grid: Details + Interactive Bed Reservation Matrix */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.2fr', gap: '32px' }}>
+      {/* Main Grid: Auto-Adaptive 1-column on mobile/tablet, 2-column on monitor */}
+      <div className="adaptive-detail-grid">
         
         {/* Left column: Overview, Rooms, Amenities */}
         <div>
@@ -270,7 +262,7 @@ export default function PropertyDetail({ onOpenAuth }) {
           </div>
 
           {/* Interactive Room & Bed Matrix */}
-          <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+          <div id="room-bed-selection" className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div>
                 <h2 style={{ fontSize: '1.3rem' }}>Select Room & Bed</h2>
@@ -502,6 +494,35 @@ export default function PropertyDetail({ onOpenAuth }) {
         </div>
 
       </div>
+
+      {/* Mobile Sticky Quick Booking Bar */}
+      <div className="mobile-bottom-bar">
+        <div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Monthly Rent</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#60a5fa', lineHeight: 1.1 }}>
+            ₹{selectedRoom?.rent || property.monthly_rent_start}
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}> /mo</span>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            if (lockStatus) {
+              handleConfirmBookingPayment();
+            } else {
+              const bedSection = document.getElementById('room-bed-selection');
+              if (bedSection) {
+                bedSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+          }}
+          className="btn-primary"
+          style={{ padding: '10px 18px', fontSize: '0.9rem' }}
+        >
+          {lockStatus ? 'Pay Deposit & Book' : 'Select Bed'}
+        </button>
+      </div>
+
     </div>
   );
 }
