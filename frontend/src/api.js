@@ -5,7 +5,9 @@
 const RAW_BASE_URL = 
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) ||
   (typeof process !== 'undefined' && process.env && process.env.REACT_APP_BACKEND_URL) ||
-  '';
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && !window.location.hostname.includes('127.0.0.1')
+    ? 'https://pgbooking-api.onrender.com'
+    : '');
 
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 export const API_BASE = BASE_URL ? `${BASE_URL}/api` : '/api';
@@ -47,6 +49,10 @@ async function request(endpoint, options = {}) {
     err.status = response.status;
     err.data = data;
     throw err;
+  }
+
+  if (data === null && response.status !== 204) {
+    throw new Error('Received unexpected non-JSON response from server.');
   }
 
   return data;
