@@ -101,7 +101,7 @@ export default function CityLandingPage() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(11, 15, 25, 0.75) 0%, rgba(11, 15, 25, 0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(28, 25, 23, 0.5) 0%, rgba(28, 25, 23, 0.85) 100%)',
         }} />
 
         <div className="container" style={{ position: 'relative', zIndex: 1, padding: '40px 20px' }}>
@@ -111,7 +111,7 @@ export default function CityLandingPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              color: 'var(--text-secondary)',
+              color: '#f5f5f4',
               textDecoration: 'none',
               fontSize: '0.88rem',
               marginBottom: '16px',
@@ -124,16 +124,16 @@ export default function CityLandingPage() {
             <span className="badge badge-city" style={{ fontSize: '0.8rem', padding: '6px 12px' }}>
               <MapPin size={14} /> {cityInfo.name}, Rajasthan
             </span>
-            <span style={{ fontSize: '0.85rem', color: '#60a5fa', fontWeight: '600' }}>
+            <span style={{ fontSize: '0.85rem', color: '#fde8e1', fontWeight: '600' }}>
               Avg: {cityInfo.avgRent}
             </span>
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', marginBottom: '12px' }}>
-            PG & Hostels in <span className="gradient-text">{cityInfo.name}</span>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)', color: '#ffffff', marginBottom: '12px' }}>
+            PG & Hostels in <span style={{ color: '#f59e0b' }}>{cityInfo.name}</span>
           </h1>
 
-          <p style={{ maxWidth: '720px', color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '20px' }}>
+          <p style={{ maxWidth: '720px', color: '#e7e5e4', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '20px' }}>
             {cityInfo.description}
           </p>
 
@@ -146,9 +146,10 @@ export default function CityLandingPage() {
                   fontSize: '0.8rem',
                   padding: '5px 12px',
                   borderRadius: '16px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid var(--border-glass)',
-                  color: 'var(--text-primary)',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
                 }}
               >
                 📍 {hub}
@@ -162,7 +163,7 @@ export default function CityLandingPage() {
       <section className="container" style={{ padding: '40px 20px 80px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h2 style={{ fontSize: '1.5rem' }}>Verified Residences in {cityInfo.name}</h2>
+            <h2 className="font-serif" style={{ fontSize: '1.8rem', color: 'var(--text-primary)' }}>Verified Residences in {cityInfo.name}</h2>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
               {properties.length} active hostels with real-time bed reservations
             </p>
@@ -174,15 +175,16 @@ export default function CityLandingPage() {
                 key={g}
                 onClick={() => setGenderFilter(g)}
                 style={{
-                  padding: '6px 14px',
+                  padding: '8px 16px',
                   borderRadius: '16px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.85rem',
                   fontWeight: '600',
-                  border: genderFilter === g ? '1px solid #3b82f6' : '1px solid var(--border-glass)',
-                  background: genderFilter === g ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                  color: genderFilter === g ? '#60a5fa' : 'var(--text-secondary)',
+                  border: genderFilter === g ? '1px solid var(--accent-primary)' : '1px solid var(--border-glass)',
+                  background: genderFilter === g ? 'var(--accent-primary)' : '#ffffff',
+                  color: genderFilter === g ? '#ffffff' : 'var(--text-secondary)',
                   cursor: 'pointer',
                   textTransform: 'capitalize',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 {g === 'all' ? 'All Genders' : g === 'male' ? 'Boys PG' : g === 'female' ? 'Girls PG' : 'Co-Living'}

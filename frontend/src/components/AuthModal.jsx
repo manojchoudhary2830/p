@@ -67,19 +67,22 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
       position: 'fixed',
       inset: 0,
       zIndex: 200,
-      background: 'rgba(0, 0, 0, 0.75)',
+      background: 'rgba(28, 25, 23, 0.65)',
       backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
     }}>
-      <div className="glass-panel" style={{
+      <div style={{
         width: '100%',
         maxWidth: '440px',
-        padding: '32px',
+        padding: '36px 32px',
         position: 'relative',
-        background: '#111827',
+        background: '#ffffff',
+        borderRadius: '16px',
+        border: '1px solid var(--border-glass)',
+        boxShadow: '0 24px 60px rgba(44, 38, 34, 0.18)',
       }}>
         {/* Close button */}
         <button
@@ -92,6 +95,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             border: 'none',
             color: 'var(--text-muted)',
             cursor: 'pointer',
+            padding: '4px',
           }}
         >
           <X size={20} />
@@ -99,7 +103,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '6px' }}>
+          <h2 className="font-serif" style={{ fontSize: '1.75rem', marginBottom: '6px', color: 'var(--text-primary)' }}>
             {tab === 'login' && 'Welcome Back'}
             {tab === 'register' && 'Create Your Account'}
             {tab === 'forgot' && 'Reset Password'}
@@ -118,8 +122,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             gap: '8px',
             marginBottom: '20px',
             padding: '10px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '8px',
+            background: 'var(--bg-warm)',
+            borderRadius: '10px',
             border: '1px dashed var(--border-glass)',
           }}>
             <button
@@ -128,12 +132,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
               style={{
                 flex: 1,
                 fontSize: '0.78rem',
-                padding: '6px',
-                borderRadius: '6px',
-                background: 'rgba(59, 130, 246, 0.15)',
-                color: '#60a5fa',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
+                fontWeight: '600',
+                padding: '8px',
+                borderRadius: '8px',
+                background: '#ffffff',
+                color: 'var(--accent-primary)',
+                border: '1px solid var(--border-glass)',
                 cursor: 'pointer',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
               }}
             >
               Demo Student
@@ -144,12 +150,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
               style={{
                 flex: 1,
                 fontSize: '0.78rem',
-                padding: '6px',
-                borderRadius: '6px',
-                background: 'rgba(245, 158, 11, 0.15)',
-                color: '#fbbf24',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
+                fontWeight: '600',
+                padding: '8px',
+                borderRadius: '8px',
+                background: '#ffffff',
+                color: '#b45309',
+                border: '1px solid var(--border-glass)',
                 cursor: 'pointer',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
               }}
             >
               Demo PG Owner
@@ -164,10 +172,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             alignItems: 'center',
             gap: '8px',
             padding: '10px 14px',
-            background: 'rgba(244, 63, 94, 0.15)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
+            background: '#fff1f2',
+            border: '1px solid #fecdd3',
             borderRadius: '8px',
-            color: '#fb7185',
+            color: '#be123c',
             fontSize: '0.85rem',
             marginBottom: '16px',
           }}>
@@ -183,10 +191,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             alignItems: 'center',
             gap: '8px',
             padding: '10px 14px',
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            background: '#ecfdf5',
+            border: '1px solid #a7f3d0',
             borderRadius: '8px',
-            color: '#34d399',
+            color: '#047857',
             fontSize: '0.85rem',
             marginBottom: '16px',
           }}>
@@ -199,7 +207,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
           {tab === 'register' && (
             <>
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block', fontWeight: '500' }}>
                   Full Name
                 </label>
                 <input
@@ -213,7 +221,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block', fontWeight: '500' }}>
                   Phone Number
                 </label>
                 <input
@@ -227,7 +235,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px', display: 'block', fontWeight: '500' }}>
                   Account Type
                 </label>
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -236,34 +244,36 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                     onClick={() => setRole('tenant')}
                     style={{
                       flex: 1,
-                      padding: '8px',
+                      padding: '10px',
                       borderRadius: '8px',
                       fontSize: '0.85rem',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      background: role === 'tenant' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                      color: role === 'tenant' ? '#60a5fa' : 'var(--text-secondary)',
-                      border: role === 'tenant' ? '1px solid #3b82f6' : '1px solid var(--border-glass)',
+                      background: role === 'tenant' ? 'var(--accent-primary)' : '#ffffff',
+                      color: role === 'tenant' ? '#ffffff' : 'var(--text-secondary)',
+                      border: role === 'tenant' ? '1px solid var(--accent-primary)' : '1px solid var(--border-glass)',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    Student / Tenant
+                    I'm looking for a PG
                   </button>
                   <button
                     type="button"
                     onClick={() => setRole('owner')}
                     style={{
                       flex: 1,
-                      padding: '8px',
+                      padding: '10px',
                       borderRadius: '8px',
                       fontSize: '0.85rem',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      background: role === 'owner' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                      color: role === 'owner' ? '#fbbf24' : 'var(--text-secondary)',
-                      border: role === 'owner' ? '1px solid #f59e0b' : '1px solid var(--border-glass)',
+                      background: role === 'owner' ? 'var(--accent-primary)' : '#ffffff',
+                      color: role === 'owner' ? '#ffffff' : 'var(--text-secondary)',
+                      border: role === 'owner' ? '1px solid var(--accent-primary)' : '1px solid var(--border-glass)',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    PG Owner
+                    I own a PG
                   </button>
                 </div>
               </div>
@@ -271,7 +281,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
           )}
 
           <div>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block' }}>
+            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block', fontWeight: '500' }}>
               Email Address
             </label>
             <input
@@ -287,12 +297,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
           {tab !== 'forgot' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Password</label>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Password</label>
                 {tab === 'login' && (
                   <button
                     type="button"
                     onClick={() => { setTab('forgot'); setError(''); setSuccess(''); }}
-                    style={{ background: 'transparent', border: 'none', color: '#60a5fa', fontSize: '0.78rem', cursor: 'pointer' }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: '500' }}
                   >
                     Forgot?
                   </button>
@@ -313,7 +323,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             type="submit"
             disabled={loading}
             className="btn-primary"
-            style={{ width: '100%', marginTop: '6px' }}
+            style={{ width: '100%', marginTop: '8px', padding: '12px' }}
           >
             {loading ? 'Processing...' : (
               tab === 'login' ? 'Sign In' : tab === 'register' ? 'Register Now' : 'Send Reset Link'
@@ -322,14 +332,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         </form>
 
         {/* Footer switcher */}
-        <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+        <div style={{ textAlign: 'center', marginTop: '22px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           {tab === 'login' && (
             <p>
               Don't have an account?{' '}
               <button
                 type="button"
                 onClick={() => { setTab('register'); setError(''); setSuccess(''); }}
-                style={{ background: 'transparent', border: 'none', color: '#60a5fa', fontWeight: '600', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontWeight: '600', cursor: 'pointer' }}
               >
                 Sign up
               </button>
@@ -341,7 +351,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
               <button
                 type="button"
                 onClick={() => { setTab('login'); setError(''); setSuccess(''); }}
-                style={{ background: 'transparent', border: 'none', color: '#60a5fa', fontWeight: '600', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontWeight: '600', cursor: 'pointer' }}
               >
                 Sign in
               </button>
@@ -351,7 +361,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             <button
               type="button"
               onClick={() => { setTab('login'); setError(''); setSuccess(''); }}
-              style={{ background: 'transparent', border: 'none', color: '#60a5fa', fontWeight: '600', cursor: 'pointer' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', fontWeight: '600', cursor: 'pointer' }}
             >
               Back to Login
             </button>

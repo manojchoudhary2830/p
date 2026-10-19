@@ -47,21 +47,24 @@ export default function AiAssistantModal({ isOpen, onClose }) {
       position: 'fixed',
       inset: 0,
       zIndex: 200,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(10px)',
+      background: 'rgba(28, 25, 23, 0.65)',
+      backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
     }}>
-      <div className="glass-panel" style={{
+      <div style={{
         width: '100%',
         maxWidth: '640px',
         maxHeight: '90vh',
         overflowY: 'auto',
-        padding: '30px',
+        padding: '32px',
         position: 'relative',
-        background: '#111827',
+        background: '#ffffff',
+        borderRadius: '16px',
+        border: '1px solid var(--border-glass)',
+        boxShadow: '0 24px 60px rgba(44, 38, 34, 0.18)',
       }}>
         {/* Close button */}
         <button
@@ -74,6 +77,7 @@ export default function AiAssistantModal({ isOpen, onClose }) {
             border: 'none',
             color: 'var(--text-muted)',
             cursor: 'pointer',
+            padding: '4px',
           }}
         >
           <X size={20} />
@@ -85,14 +89,14 @@ export default function AiAssistantModal({ isOpen, onClose }) {
             width: '32px',
             height: '32px',
             borderRadius: '8px',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
+            background: 'var(--accent-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}>
             <Sparkles size={18} color="#fff" />
           </div>
-          <h2 style={{ fontSize: '1.4rem' }}>NextGen AI PG Assistant</h2>
+          <h2 className="font-serif" style={{ fontSize: '1.6rem', color: 'var(--text-primary)' }}>AI Room Finder</h2>
         </div>
         <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
           Tell us your college, company, or preferences — our AI will find the best verified PG with vacant beds.
@@ -201,13 +205,13 @@ export default function AiAssistantModal({ isOpen, onClose }) {
         {result && (
           <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-glass)', paddingTop: '20px' }}>
             <div style={{
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid rgba(59, 130, 246, 0.25)',
+              background: '#fef3c7',
+              border: '1px solid #fde68a',
               borderRadius: '10px',
               padding: '14px',
               marginBottom: '16px',
               fontSize: '0.9rem',
-              color: '#93c5fd',
+              color: '#92400e',
               lineHeight: 1.5,
             }}>
               💡 <strong>AI Recommendation Insight:</strong> {result.advice}
@@ -220,9 +224,9 @@ export default function AiAssistantModal({ isOpen, onClose }) {
                   style={{
                     display: 'flex',
                     gap: '14px',
-                    padding: '12px',
-                    borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    padding: '14px',
+                    borderRadius: '12px',
+                    background: 'var(--bg-warm)',
                     border: '1px solid var(--border-glass)',
                   }}
                 >
@@ -236,7 +240,7 @@ export default function AiAssistantModal({ isOpen, onClose }) {
                       <span className="badge badge-city" style={{ fontSize: '0.65rem' }}>{p.city}</span>
                       {p.is_boosted && <span className="badge badge-boosted" style={{ fontSize: '0.65rem' }}>Featured</span>}
                     </div>
-                    <div style={{ fontWeight: '700', fontSize: '0.92rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {p.title}
                     </div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', margin: '2px 0 6px 0' }}>
@@ -244,23 +248,23 @@ export default function AiAssistantModal({ isOpen, onClose }) {
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.area}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#60a5fa' }}>
-                        ₹{p.monthly_rent_start}<span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>/mo</span>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--accent-primary)' }}>
+                        ₹{p.monthly_rent_start}<span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>/mo</span>
                       </div>
                       <Link
                         to={`/properties/${p._id}`}
                         onClick={onClose}
                         style={{
-                          fontSize: '0.78rem',
+                          fontSize: '0.82rem',
                           fontWeight: '600',
-                          color: '#fff',
+                          color: 'var(--accent-primary)',
                           textDecoration: 'none',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '4px',
                         }}
                       >
-                        View Beds <ArrowRight size={12} />
+                        View Beds <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

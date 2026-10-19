@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BookmarkCheck, Bed, Clock, AlertTriangle, RefreshCw,
-  CheckCircle2, XCircle, ArrowRight, ShieldCheck, MapPin
+  Calendar, Bed, Clock, AlertTriangle, RefreshCw,
+  CheckCircle2, XCircle, ArrowRight, ShieldCheck, MapPin, Printer
 } from 'lucide-react';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -71,13 +71,18 @@ export default function TenantDashboard() {
   };
 
   return (
-    <div className="container" style={{ padding: '40px 20px 80px 20px' }}>
+    <div className="container" style={{ padding: '50px 24px 90px 24px', maxWidth: '1000px' }}>
       
-      {/* Header */}
-      <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '6px' }}>My PG Bookings & Beds</h1>
+      {/* Header matching pgbook. */}
+      <div style={{ marginBottom: '36px' }}>
+        <div style={{ fontSize: '0.78rem', fontWeight: '700', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '8px' }}>
+          MY ACCOUNT
+        </div>
+        <h1 style={{ fontSize: '2.4rem', fontWeight: '800', letterSpacing: '-0.03em', marginBottom: '8px' }}>
+          Your bookings
+        </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Welcome back, {user?.full_name}. Manage your bed reservations and refund status.
+          Manage your verified bed reservations, move-in receipts, and refund claims.
         </p>
       </div>
 
@@ -86,236 +91,216 @@ export default function TenantDashboard() {
           Loading your reservations...
         </div>
       ) : bookings.length === 0 ? (
-        <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <BookmarkCheck size={48} color="#60a5fa" style={{ marginBottom: '16px' }} />
-          <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>No bookings found</h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-            You haven't reserved any beds yet. Explore verified residences in Jaipur, Neemrana, Behror, or Kotputli.
+        <div className="clean-panel" style={{ textAlign: 'center', padding: '60px 24px' }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'var(--accent-primary-soft)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 18px auto',
+          }}>
+            <Calendar size={28} color="var(--accent-primary)" />
+          </div>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '8px' }}>No bookings yet</h3>
+          <p style={{ color: 'var(--text-muted)', maxWidth: '440px', margin: '0 auto 24px auto', fontSize: '0.92rem' }}>
+            You haven't reserved any beds yet. Explore verified student and executive residences across Jaipur & NCR.
           </p>
           <Link to="/" className="btn-primary">
-            Browse Accommodations
+            Explore Residences
           </Link>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {bookings.map((b) => {
             const isConfirmed = b.status === 'confirmed';
             const isCancelled = b.status === 'cancelled';
-            const isPending = b.status === 'pending_payment';
-
-            const refundStatus = b.refund_status || 'none';
-            const canRetryRefund = refundStatus === 'refund_failed'; // Security rule: refund_failed only!
+            const statusClass = isConfirmed ? 'active' : isCancelled ? 'expired' : 'pending';
 
             return (
-              <div key={b._id} className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                
-                {/* Header row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+              <div
+                key={b._id}
+                className="clean-panel"
+                style={{
+                  padding: '24px 28px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  borderRadius: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span className="badge badge-city">{b.property_city}</span>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Booking ID: {b._id}</span>
-                    </div>
-                    <h3 style={{ fontSize: '1.3rem' }}>{b.property_title}</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                      <MapPin size={14} color="var(--accent-primary)" />
-                      {b.property_address}
-                    </div>
-                  </div>
+                    {/* Status badge pill matching pgbook. */}
+                    <span className={`badge-status ${statusClass}`} style={{ marginBottom: '10px' }}>
+                      {b.status}
+                    </span>
 
-                  {/* Booking Status Badge */}
-                  <div>
-                    {isConfirmed && (
-                      <span className="badge badge-vacant" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <CheckCircle2 size={14} /> Confirmed
-                      </span>
-                    )}
-                    {isPending && (
-                      <span className="badge badge-locked" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Clock size={14} /> Payment Pending
-                      </span>
-                    )}
-                    {isCancelled && (
-                      <span style={{
-                        padding: '4px 10px',
-                        borderRadius: '20px',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        background: 'rgba(107, 114, 128, 0.2)',
-                        color: 'var(--text-muted)',
-                      }}>
-                        Cancelled
-                      </span>
-                    )}
-                  </div>
-                </div>
+                    <h2 style={{ fontSize: '1.35rem', fontWeight: '700', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                      {b.property_title}
+                    </h2>
 
-                {/* Reservation Details Card */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '14px',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  padding: '16px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--border-glass)',
-                }}>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Reserved Bed</span>
-                    <strong style={{ fontSize: '1.05rem', color: '#60a5fa' }}>Bed {b.bed_code}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{b.room_type}</div>
-                  </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px',
+                      fontSize: '0.88rem',
+                      color: 'var(--text-secondary)',
+                      flexWrap: 'wrap',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Calendar size={15} color="var(--text-muted)" />
+                        <span>Move-in: <strong>{b.check_in_date || 'Immediate'}</strong></span>
+                      </div>
 
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Check-in Date</span>
-                    <strong style={{ fontSize: '0.95rem' }}>{b.check_in_date}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Duration: {b.months_duration} mo</div>
-                  </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Clock size={15} color="var(--text-muted)" />
+                        <span>{b.months_duration || 1} month{b.months_duration > 1 ? 's' : ''}</span>
+                      </div>
 
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Monthly Rent</span>
-                    <strong style={{ fontSize: '0.95rem' }}>₹{b.monthly_rent}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Deposit: ₹{b.security_deposit}</div>
-                  </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Bed size={15} color="var(--accent-primary)" />
+                        <span>Bed <strong>{b.bed_code}</strong> ({b.room_type})</span>
+                      </div>
 
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Amount Paid</span>
-                    <strong style={{ fontSize: '1.05rem', color: '#34d399' }}>₹{b.total_amount}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Status: {b.payment_status}</div>
-                  </div>
-                </div>
-
-                {/* Refund Status & Actions (per p.md lines 108-118) */}
-                {isCancelled && b.refund_amount > 0 && (
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    background: refundStatus === 'refunded' ? 'rgba(16, 185, 129, 0.1)' : refundStatus === 'refund_failed' ? 'rgba(244, 63, 94, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                    border: `1px solid ${refundStatus === 'refunded' ? 'rgba(16, 185, 129, 0.25)' : refundStatus === 'refund_failed' ? 'rgba(244, 63, 94, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
-                    flexWrap: 'wrap',
-                    gap: '10px',
-                  }}>
-                    <div>
-                      <span style={{ fontSize: '0.85rem', fontWeight: '700', color: refundStatus === 'refunded' ? '#34d399' : refundStatus === 'refund_failed' ? '#fb7185' : '#fbbf24' }}>
-                        {refundStatus === 'refunded' && '✓ Refund Completed: ₹' + b.refund_amount}
-                        {refundStatus === 'refund_pending' && '⏳ Refund In Progress: ₹' + b.refund_amount}
-                        {refundStatus === 'refund_failed' && '⚠️ Refund Transfer Issue: ₹' + b.refund_amount}
-                      </span>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        {refundStatus === 'refunded' && `Reference: ${b.refund_reference || 'N/A'}`}
-                        {refundStatus === 'refund_pending' && 'Automated settlement queued. Retries locked while pending.'}
-                        {refundStatus === 'refund_failed' && 'Gateway reported an error. Click below to retry.'}
+                      <div>
+                        <strong>₹{b.total_amount?.toLocaleString('en-IN') || '8,000'}</strong> token paid
                       </div>
                     </div>
+                  </div>
 
-                    {/* Retry button strictly restricted to refund_failed only */}
-                    {canRetryRefund && (
+                  {/* Actions matching pgbook. */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignSelf: 'center' }}>
+                    <Link
+                      to={`/booking/success?booking_id=${b._id}`}
+                      className="btn-secondary"
+                      style={{ padding: '8px 14px', fontSize: '0.82rem', gap: '6px' }}
+                    >
+                      <Printer size={15} />
+                      <span>View Receipt</span>
+                    </Link>
+
+                    {isConfirmed && (
+                      <button
+                        onClick={() => setCancelTarget(b)}
+                        className="btn-secondary"
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', color: '#dc2626', borderColor: '#fca5a5' }}
+                      >
+                        Cancel Booking
+                      </button>
+                    )}
+
+                    {/* Retry Refund Button */}
+                    {isCancelled && b.refund_status === 'refund_failed' && (
                       <button
                         onClick={() => handleRetryRefund(b._id)}
                         disabled={retryingRefundId === b._id}
-                        className="btn-secondary"
-                        style={{ padding: '6px 14px', fontSize: '0.8rem', gap: '6px' }}
+                        className="btn-primary"
+                        style={{ padding: '8px 14px', fontSize: '0.82rem', gap: '6px' }}
                       >
-                        <RefreshCw size={14} className={retryingRefundId === b._id ? 'pulse-glow' : ''} />
+                        <RefreshCw size={14} className={retryingRefundId === b._id ? 'animate-spin' : ''} />
                         <span>{retryingRefundId === b._id ? 'Retrying...' : 'Retry Refund'}</span>
                       </button>
                     )}
                   </div>
-                )}
-
-                {/* Footer action buttons */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '8px' }}>
-                  {isConfirmed && (
-                    <button
-                      onClick={() => setCancelTarget(b)}
-                      className="btn-secondary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem', color: '#fb7185', borderColor: 'rgba(244, 63, 94, 0.3)' }}
-                    >
-                      Cancel Reservation
-                    </button>
-                  )}
-                  <Link
-                    to={`/properties/${b.property_id}`}
-                    className="btn-secondary"
-                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  >
-                    View Residence
-                  </Link>
                 </div>
 
+                {/* Refund Status Banner */}
+                {isCancelled && (
+                  <div style={{
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    background: b.refund_status === 'refunded' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(245, 158, 11, 0.08)',
+                    border: b.refund_status === 'refunded' ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(245, 158, 11, 0.25)',
+                    fontSize: '0.84rem',
+                    color: 'var(--text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                  }}>
+                    <div>
+                      Refund Status: <strong style={{ color: b.refund_status === 'refunded' ? '#059669' : '#d97706', textTransform: 'capitalize' }}>
+                        {b.refund_status?.replace('_', ' ')}
+                      </strong> (₹{b.refund_amount})
+                    </div>
+                    {b.refund_reference && (
+                      <span style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                        Ref: {b.refund_reference}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       )}
 
-      {/* Cancellation Confirmation Modal */}
+      {/* Cancellation Modal */}
       {cancelTarget && (
         <div style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 210,
-          background: 'rgba(0,0,0,0.75)',
-          backdropFilter: 'blur(8px)',
+          zIndex: 220,
+          background: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(6px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '20px',
         }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '480px', padding: '28px', background: '#111827' }}>
-            <h3 style={{ fontSize: '1.3rem', marginBottom: '8px', color: '#fb7185' }}>
-              Confirm Booking Cancellation
-            </h3>
+          <div className="clean-panel" style={{ maxWidth: '480px', width: '100%', padding: '30px' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '10px' }}>Confirm Cancellation</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px', lineHeight: 1.5 }}>
-              Are you sure you want to cancel your reservation for <strong>Bed {cancelTarget.bed_code}</strong> at <strong>{cancelTarget.property_title}</strong>?
+              Are you sure you want to cancel your reservation for <strong>{cancelTarget.property_title}</strong> (Bed {cancelTarget.bed_code})?
             </p>
-
             <div style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid var(--border-glass)',
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+              padding: '12px 14px',
               borderRadius: '8px',
-              padding: '12px',
+              fontSize: '0.84rem',
+              color: 'var(--text-secondary)',
               marginBottom: '16px',
-              fontSize: '0.85rem',
-              color: 'var(--text-muted)',
             }}>
-              💡 <strong>Refund Policy Reminder:</strong> Cancellations within the 2-day grace period receive 100% refund. Cancellations made thereafter receive an 80% refund.
+              Eligible token refund: <strong>80% policy</strong> applies post-confirmation. Bed will be returned to vacant inventory.
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
-                Reason for cancellation
-              </label>
-              <textarea
-                rows={2}
-                className="input-glass"
-                placeholder="e.g. Relocating, changed college plans..."
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                style={{ resize: 'none' }}
-              />
-            </div>
+            <textarea
+              rows={2}
+              className="input-clean"
+              placeholder="Reason for cancellation (optional)..."
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              style={{ marginBottom: '20px', resize: 'none' }}
+            />
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button onClick={() => setCancelTarget(null)} className="btn-secondary" style={{ padding: '8px 16px' }}>
+              <button
+                type="button"
+                onClick={() => setCancelTarget(null)}
+                className="btn-secondary"
+                disabled={cancelling}
+              >
                 Keep Booking
               </button>
               <button
+                type="button"
                 onClick={handleConfirmCancel}
                 disabled={cancelling}
                 className="btn-primary"
-                style={{ padding: '8px 18px', background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' }}
+                style={{ background: '#dc2626' }}
               >
-                {cancelling ? 'Cancelling...' : 'Confirm & Process Refund'}
+                {cancelling ? 'Cancelling...' : 'Confirm Cancel'}
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

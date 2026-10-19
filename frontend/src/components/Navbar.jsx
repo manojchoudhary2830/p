@@ -1,293 +1,290 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Home, Sparkles, MapPin, User, LogOut, PlusCircle, ShieldCheck, BookmarkCheck, Menu, X } from 'lucide-react';
+import { Building2, User, LogOut, PlusCircle, ShieldCheck, BookmarkCheck, Menu, X, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function Navbar({ onOpenAuth, onOpenAi }) {
+export default function Navbar({ onOpenAi }) {
   const { user, isLoggedIn, isOwner, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close mobile menu whenever location changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const cities = [
-    { id: 'jaipur', label: 'Jaipur' },
-    { id: 'neemrana', label: 'Neemrana' },
-    { id: 'behror', label: 'Behror' },
-    { id: 'kotputli', label: 'Kotputli' },
-  ];
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header style={{
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      background: 'rgba(11, 15, 25, 0.90)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-      padding: '12px 0',
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      borderBottom: '1px solid var(--border-subtle)',
+      padding: '14px 0',
+      transition: 'all 0.2s ease',
     }}>
       <div className="container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
           
-          {/* Brand */}
+          {/* pgbook. Brand Logo */}
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
             <div style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              width: '36px',
+              height: '36px',
+              borderRadius: '8px',
+              background: 'var(--accent-primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(59, 130, 246, 0.5)',
+              color: '#ffffff',
+              boxShadow: '0 2px 8px rgba(200, 90, 56, 0.25)',
               flexShrink: 0,
             }}>
-              <Home size={22} color="#ffffff" />
+              <Building2 size={20} />
             </div>
-            <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', fontWeight: '800', lineHeight: 1.1 }}>
-                <span style={{ color: '#ffffff' }}>Next</span><span className="gradient-text">Gen PG</span>
-              </div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
-                JAIPUR • NEEMRANA • BEHROR • KOTPUTLI
-              </div>
+            <div style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.45rem',
+              fontWeight: '800',
+              letterSpacing: '-0.03em',
+              color: 'var(--text-primary)',
+              lineHeight: 1,
+            }}>
+              pgbook<span style={{ color: 'var(--accent-primary)' }}>.</span>
             </div>
           </Link>
 
-          {/* Desktop City Navigation */}
-          <nav className="nav-desktop-links" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {cities.map((city) => {
-              const isActive = location.pathname === `/cities/${city.id}`;
-              return (
-                <Link
-                  key={city.id}
-                  to={`/cities/${city.id}`}
-                  style={{
-                    textDecoration: 'none',
-                    fontSize: '0.88rem',
-                    fontWeight: '600',
-                    padding: '6px 14px',
-                    borderRadius: '20px',
-                    transition: 'all 0.2s',
-                    background: isActive ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
-                    color: isActive ? '#60a5fa' : 'var(--text-secondary)',
-                    border: isActive ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent',
-                  }}
-                >
-                  {city.label}
-                </Link>
-              );
-            })}
+          {/* Desktop Navigation Links */}
+          <nav className="nav-desktop-links" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <Link
+              to="/"
+              style={{
+                fontSize: '0.92rem',
+                fontWeight: location.pathname === '/' ? '600' : '500',
+                color: location.pathname === '/' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                transition: 'color 0.2s',
+              }}
+            >
+              Discover
+            </Link>
+
+            {isLoggedIn && (
+              <Link
+                to="/tenant-dashboard"
+                style={{
+                  fontSize: '0.92rem',
+                  fontWeight: location.pathname === '/tenant-dashboard' ? '600' : '500',
+                  color: location.pathname === '/tenant-dashboard' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  transition: 'color 0.2s',
+                }}
+              >
+                My Bookings
+              </Link>
+            )}
+
+            {isOwner && (
+              <Link
+                to="/owner-dashboard"
+                style={{
+                  fontSize: '0.92rem',
+                  fontWeight: location.pathname === '/owner-dashboard' ? '600' : '500',
+                  color: location.pathname === '/owner-dashboard' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  transition: 'color 0.2s',
+                }}
+              >
+                Owner Portal
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Action Controls */}
-          <div className="nav-desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* AI PG Finder button */}
-            <button
-              onClick={onOpenAi}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.4)',
-                borderRadius: '20px',
-                color: '#c084fc',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <Sparkles size={16} />
-              <span>AI PG Finder</span>
-            </button>
+          <div className="nav-desktop-actions" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            {/* AI Assistant button */}
+            {onOpenAi && (
+              <button
+                type="button"
+                onClick={onOpenAi}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 14px',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '20px',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.84rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
+              >
+                <span>✨ AI PG Finder</span>
+              </button>
+            )}
 
-            {isLoggedIn ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {isOwner ? (
-                  <Link to="/owner-dashboard" className="btn-secondary" style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
-                    <PlusCircle size={16} />
-                    <span>Owner Dashboard</span>
-                  </Link>
-                ) : (
-                  <Link to="/tenant-dashboard" className="btn-secondary" style={{ padding: '8px 14px', fontSize: '0.85rem' }}>
-                    <BookmarkCheck size={16} />
-                    <span>My Bookings</span>
-                  </Link>
-                )}
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    {user?.full_name?.split(' ')[0]}
-                  </span>
-                  <button
-                    onClick={logout}
-                    title="Logout"
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--text-muted)',
-                      cursor: 'pointer',
-                      padding: '6px',
-                      display: 'flex',
-                    }}
-                  >
-                    <LogOut size={18} />
-                  </button>
-                </div>
+            {!isLoggedIn ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Link
+                  to="/login"
+                  style={{
+                    fontSize: '0.92rem',
+                    fontWeight: '600',
+                    color: 'var(--text-primary)',
+                    padding: '8px 14px',
+                  }}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn-primary"
+                  style={{ padding: '8px 18px', fontSize: '0.9rem' }}
+                >
+                  Get started
+                </Link>
               </div>
             ) : (
-              <button
-                onClick={() => onOpenAuth('login')}
-                className="btn-primary"
-                style={{ padding: '8px 18px', fontSize: '0.88rem' }}
-              >
-                <User size={16} />
-                <span>Login / Sign Up</span>
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {/* Notification Bell with Badge */}
+                <div style={{
+                  position: 'relative',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: 'var(--bg-subtle)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                }}>
+                  <Bell size={18} />
+                  <span style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-2px',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    background: 'var(--accent-primary)',
+                    color: '#ffffff',
+                    fontSize: '0.68rem',
+                    fontWeight: '700',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    2
+                  </span>
+                </div>
+
+                {/* User Profile Pill */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 14px',
+                  background: 'var(--bg-subtle)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '24px',
+                  fontSize: '0.88rem',
+                  fontWeight: '600',
+                }}>
+                  <User size={16} color="var(--accent-primary)" />
+                  <span>{user.full_name || 'My Account'}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Sign out"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    padding: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.color = '#ef4444'; }}
+                  onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
             )}
           </div>
 
-          {/* Mobile & Tablet Hamburger Toggle */}
+          {/* Mobile Menu Button */}
           <button
-            className="nav-mobile-toggle"
+            type="button"
+            className="nav-mobile-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle Navigation Menu"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              padding: '6px',
+              display: 'none',
+            }}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-
         </div>
 
-        {/* Mobile & Tablet Slide-down Drawer */}
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="nav-mobile-drawer">
-            {/* Quick AI search row */}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAi();
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '12px',
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.5)',
-                borderRadius: '12px',
-                color: '#c084fc',
-                fontWeight: '700',
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                width: '100%',
-              }}
-            >
-              <Sparkles size={18} />
-              <span>Ask AI PG Finder (Budget & College Matching)</span>
-            </button>
+          <div style={{
+            marginTop: '14px',
+            paddingTop: '14px',
+            borderTop: '1px solid var(--border-subtle)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+          }}>
+            <Link to="/" style={{ fontSize: '0.95rem', fontWeight: '500', padding: '6px 0' }}>
+              Discover
+            </Link>
+            {isLoggedIn && (
+              <Link to="/tenant-dashboard" style={{ fontSize: '0.95rem', fontWeight: '500', padding: '6px 0' }}>
+                My Bookings
+              </Link>
+            )}
+            {isOwner && (
+              <Link to="/owner-dashboard" style={{ fontSize: '0.95rem', fontWeight: '500', padding: '6px 0' }}>
+                Owner Portal
+              </Link>
+            )}
 
-            {/* City Links Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-              {cities.map((city) => {
-                const isActive = location.pathname === `/cities/${city.id}`;
-                return (
-                  <Link
-                    key={city.id}
-                    to={`/cities/${city.id}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    style={{
-                      textDecoration: 'none',
-                      textAlign: 'center',
-                      fontSize: '0.88rem',
-                      fontWeight: '600',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: isActive ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                      color: isActive ? '#60a5fa' : 'var(--text-primary)',
-                      border: isActive ? '1px solid #3b82f6' : '1px solid var(--border-glass)',
-                    }}
-                  >
-                    📍 {city.label}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Mobile Auth & Account Actions */}
-            <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {isLoggedIn ? (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 4px' }}>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                      Signed in as <strong style={{ color: '#ffffff' }}>{user?.full_name}</strong> ({user?.role})
-                    </span>
-                    <button
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        logout();
-                      }}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#fb7185',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                      }}
-                    >
-                      <LogOut size={16} /> Logout
-                    </button>
-                  </div>
-
-                  {isOwner ? (
-                    <Link
-                      to="/owner-dashboard"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="btn-primary"
-                      style={{ width: '100%', justifyContent: 'center' }}
-                    >
-                      <PlusCircle size={18} /> Owner Portal & Listings
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/tenant-dashboard"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="btn-primary"
-                      style={{ width: '100%', justifyContent: 'center' }}
-                    >
-                      <BookmarkCheck size={18} /> My Bookings & Receipts
-                    </Link>
-                  )}
-                </>
-              ) : (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenAuth('login');
-                  }}
-                  className="btn-primary"
-                  style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
-                >
-                  <User size={18} /> Login / Sign Up
-                </button>
-              )}
-            </div>
-
+            {!isLoggedIn ? (
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <Link to="/login" className="btn-secondary" style={{ flex: 1, padding: '10px', textAlign: 'center' }}>
+                  Log in
+                </Link>
+                <Link to="/register" className="btn-primary" style={{ flex: 1, padding: '10px', textAlign: 'center' }}>
+                  Get started
+                </Link>
+              </div>
+            ) : (
+              <button onClick={handleLogout} className="btn-secondary" style={{ width: '100%', marginTop: '8px', gap: '6px' }}>
+                <LogOut size={16} />
+                <span>Sign Out ({user.full_name})</span>
+              </button>
+            )}
           </div>
         )}
-
       </div>
     </header>
   );

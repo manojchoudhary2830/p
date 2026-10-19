@@ -207,22 +207,24 @@ export default function PropertyDetail({ onOpenAuth }) {
 
       {/* Header Info */}
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '2.2rem', marginBottom: '8px' }}>{property.title}</h1>
+        <h1 className="font-serif" style={{ fontSize: '2.4rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>{property.title}</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: 'var(--text-secondary)', flexWrap: 'wrap' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <MapPin size={16} color="var(--accent-primary)" />
             {property.address} ({property.area})
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#fbbf24', fontWeight: '700' }}>
-            <Star size={16} fill="#fbbf24" color="#fbbf24" />
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#b45309', fontWeight: '700' }}>
+            <Star size={16} fill="#f59e0b" color="#f59e0b" />
             {property.rating} ({property.reviews_count} verified reviews)
           </span>
           <span style={{
             textTransform: 'capitalize',
-            padding: '2px 8px',
-            borderRadius: '4px',
-            background: 'rgba(255,255,255,0.06)',
+            padding: '3px 10px',
+            borderRadius: '6px',
+            background: 'var(--bg-warm)',
+            border: '1px solid var(--border-glass)',
             fontSize: '0.8rem',
+            color: 'var(--text-secondary)',
           }}>
             {property.gender === 'male' ? 'Boys PG' : property.gender === 'female' ? 'Girls PG' : 'Co-Living'}
           </span>
@@ -295,18 +297,20 @@ export default function PropertyDetail({ onOpenAuth }) {
                       if (firstVacant) setSelectedBed(firstVacant);
                     }}
                     style={{
-                      padding: '10px 16px',
+                      padding: '12px 18px',
                       borderRadius: '10px',
-                      background: isSelected ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.04)',
-                      border: isSelected ? '1px solid #3b82f6' : '1px solid var(--border-glass)',
-                      color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                      background: isSelected ? 'var(--accent-primary)' : '#ffffff',
+                      border: isSelected ? '1px solid var(--accent-primary)' : '1px solid var(--border-glass)',
+                      color: isSelected ? '#ffffff' : 'var(--text-primary)',
                       cursor: 'pointer',
                       textAlign: 'left',
                       whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease',
+                      boxShadow: isSelected ? '0 2px 8px rgba(200, 90, 56, 0.25)' : 'none',
                     }}
                   >
                     <div style={{ fontWeight: '700', fontSize: '0.92rem' }}>{r.room_type}</div>
-                    <div style={{ fontSize: '0.78rem', color: isSelected ? '#93c5fd' : 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '0.78rem', color: isSelected ? '#fde8e1' : 'var(--text-muted)' }}>
                       ₹{r.rent}/mo • {r.sharing === 1 ? 'Single' : `${r.sharing} Sharing`}
                     </div>
                   </button>
@@ -342,7 +346,7 @@ export default function PropertyDetail({ onOpenAuth }) {
                         {isOccupied ? 'Occupied' : isLocked ? 'Locked' : 'Available'}
                       </div>
                       {isSelected && (
-                        <div style={{ fontSize: '0.7rem', color: '#60a5fa', fontWeight: '700' }}>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: '700' }}>
                           ✓ Selected
                         </div>
                       )}
@@ -381,19 +385,22 @@ export default function PropertyDetail({ onOpenAuth }) {
 
         {/* Right column: Sticky Checkout & Bed Lock Panel */}
         <div>
-          <div className="glass-panel" style={{
+          <div style={{
             padding: '28px',
             position: 'sticky',
             top: '90px',
-            background: '#111827',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid var(--border-glass)',
+            boxShadow: '0 10px 30px rgba(44, 38, 34, 0.06)',
           }}>
             {/* Price Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
               <div>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Monthly Rent</span>
-                <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#60a5fa' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--accent-primary)' }}>
                   ₹{selectedRoom?.rent || property.monthly_rent_start}
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}> /month</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 'normal' }}> /month</span>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -403,9 +410,9 @@ export default function PropertyDetail({ onOpenAuth }) {
 
             {/* Selected Bed Summary */}
             <div style={{
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: 'var(--bg-warm)',
               borderRadius: '10px',
-              padding: '14px',
+              padding: '16px',
               border: '1px solid var(--border-glass)',
               marginBottom: '20px',
             }}>
@@ -417,7 +424,7 @@ export default function PropertyDetail({ onOpenAuth }) {
                 <span style={{ color: 'var(--text-secondary)' }}>Bed Code:</span>
                 <strong>Bed {selectedBed?.code || '101-A'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', color: '#34d399' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', color: 'var(--accent-primary)', fontWeight: '700' }}>
                 <span>Token Deposit (20%):</span>
                 <strong>₹{tokenDepositAmount}</strong>
               </div>
@@ -473,7 +480,7 @@ export default function PropertyDetail({ onOpenAuth }) {
                 onClick={handleConfirmBookingPayment}
                 disabled={bookingInProgress}
                 className="btn-primary"
-                style={{ width: '100%', padding: '14px', fontSize: '1rem', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+                style={{ width: '100%', padding: '14px', fontSize: '1rem', background: 'var(--accent-primary)', border: 'none' }}
               >
                 <CreditCard size={18} />
                 <span>{bookingInProgress ? 'Redirecting to Payment...' : 'Pay Token Deposit & Confirm'}</span>
@@ -499,7 +506,7 @@ export default function PropertyDetail({ onOpenAuth }) {
       <div className="mobile-bottom-bar">
         <div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Monthly Rent</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#60a5fa', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--accent-primary)', lineHeight: 1.1 }}>
             ₹{selectedRoom?.rent || property.monthly_rent_start}
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}> /mo</span>
           </div>

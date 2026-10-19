@@ -33,30 +33,37 @@ export default function BookingSuccess() {
 
   return (
     <div className="container" style={{ padding: '60px 20px', maxWidth: '680px' }}>
-      <div className="glass-panel" style={{ padding: '40px 32px', textAlign: 'center' }}>
+      <div style={{
+        padding: '48px 36px',
+        textAlign: 'center',
+        background: '#ffffff',
+        borderRadius: '16px',
+        border: '1px solid var(--border-glass)',
+        boxShadow: '0 10px 30px rgba(44, 38, 34, 0.06)',
+      }}>
         
         <div style={{
           width: '64px',
           height: '64px',
           borderRadius: '50%',
-          background: 'rgba(16, 185, 129, 0.2)',
+          background: '#ecfdf5',
           border: '2px solid #10b981',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 20px auto',
         }}>
-          <CheckCircle2 size={36} color="#10b981" />
+          <CheckCircle2 size={36} color="#047857" />
         </div>
 
-        <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Bed Reserved Successfully!</h1>
+        <h1 className="font-serif" style={{ fontSize: '2.2rem', marginBottom: '8px', color: 'var(--text-primary)' }}>Bed Reserved Successfully!</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '28px' }}>
           Your token deposit has been received and your bed is locked & confirmed.
         </p>
 
         {booking && (
           <div style={{
-            background: 'rgba(255, 255, 255, 0.02)',
+            background: 'var(--bg-warm)',
             border: '1px solid var(--border-glass)',
             borderRadius: '12px',
             padding: '24px',
@@ -68,7 +75,7 @@ export default function BookingSuccess() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Booking Reference</span>
-              <strong style={{ fontFamily: 'monospace', color: '#60a5fa' }}>{booking._id}</strong>
+              <strong style={{ fontFamily: 'monospace', color: 'var(--accent-primary)' }}>{booking._id}</strong>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
@@ -78,7 +85,7 @@ export default function BookingSuccess() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Allocated Bed</span>
-              <strong style={{ color: '#34d399' }}>Bed {booking.bed_code} ({booking.room_type})</strong>
+              <strong style={{ color: '#047857' }}>Bed {booking.bed_code} ({booking.room_type})</strong>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px' }}>
@@ -88,7 +95,7 @@ export default function BookingSuccess() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Token Deposit Paid</span>
-              <strong style={{ fontSize: '1.1rem', color: '#60a5fa' }}>₹{booking.total_amount}</strong>
+              <strong style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>₹{booking.total_amount}</strong>
             </div>
           </div>
         )}

@@ -266,15 +266,37 @@ export default function OwnerDashboard() {
             });
 
             return (
-              <div key={p._id} className="glass-panel" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div key={p._id} className="clean-panel" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ position: 'relative', height: '180px' }}>
                   <img src={p.cover_image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
-                    <span className="badge badge-city">{p.city}</span>
+                    <span style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-primary)',
+                    }}>
+                      {p.city}
+                    </span>
                   </div>
                   {p.is_boosted && (
                     <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                      <span className="badge badge-boosted"><Flame size={12} /> Featured Active</span>
+                      <span style={{
+                        background: '#d97706',
+                        color: '#ffffff',
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}>
+                        <Flame size={12} /> Top Pick
+                      </span>
                     </div>
                   )}
                 </div>
@@ -285,16 +307,16 @@ export default function OwnerDashboard() {
                     {p.area}
                   </div>
 
-                  <h3 style={{ fontSize: '1.2rem', lineHeight: 1.3 }}>{p.title}</h3>
+                  <h3 style={{ fontSize: '1.2rem', lineHeight: 1.3, color: 'var(--text-primary)' }}>{p.title}</h3>
 
                   {/* Occupancy Card */}
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    background: 'rgba(255,255,255,0.03)',
+                    background: 'var(--bg-subtle)',
                     padding: '12px',
                     borderRadius: '8px',
-                    border: '1px solid var(--border-glass)',
+                    border: '1px solid var(--border-subtle)',
                     fontSize: '0.85rem',
                   }}>
                     <div>
@@ -303,18 +325,18 @@ export default function OwnerDashboard() {
                     </div>
                     <div>
                       <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.75rem' }}>Vacant</span>
-                      <strong style={{ color: '#34d399' }}>{vacantBeds} Available</strong>
+                      <strong style={{ color: '#059669' }}>{vacantBeds} Available</strong>
                     </div>
                     <div>
                       <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.75rem' }}>Occupancy</span>
-                      <strong style={{ color: '#60a5fa' }}>
+                      <strong style={{ color: 'var(--accent-primary)' }}>
                         {totalBeds > 0 ? Math.round(((totalBeds - vacantBeds) / totalBeds) * 100) : 0}%
                       </strong>
                     </div>
                   </div>
 
-                  {/* Boost Action Button (p.md line 32: ₹499 for 30 days) */}
-                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {/* Boost Action Button */}
+                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Link to={`/properties/${p._id}`} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.82rem' }}>
                       Preview Page
                     </Link>
@@ -330,8 +352,8 @@ export default function OwnerDashboard() {
                         <span>{boostingId === p._id ? 'Boosting...' : 'Boost Listing (₹499)'}</span>
                       </button>
                     ) : (
-                      <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Flame size={14} /> Boosted (Top Ranked)
+                      <span style={{ fontSize: '0.78rem', color: '#d97706', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Flame size={14} /> Top Ranked
                       </span>
                     )}
                   </div>
@@ -348,22 +370,22 @@ export default function OwnerDashboard() {
           position: 'fixed',
           inset: 0,
           zIndex: 220,
-          background: 'rgba(0,0,0,0.75)',
-          backdropFilter: 'blur(10px)',
+          background: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '20px',
         }}>
-          <div className="glass-panel" style={{
+          <div className="clean-panel" style={{
             width: '100%',
             maxWidth: '760px',
             maxHeight: '92vh',
             overflowY: 'auto',
             padding: '32px',
-            background: '#111827',
+            background: '#ffffff',
             borderRadius: '18px',
-            border: '1px solid var(--border-glass)',
+            border: '1px solid var(--border-subtle)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Add New PG Residence</h2>
@@ -502,16 +524,16 @@ export default function OwnerDashboard() {
 
               {/* Section 2: Visual Facilities & Amenities Chips */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid var(--border-glass)',
+                background: 'var(--bg-subtle)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '14px',
-                padding: '18px',
+                padding: '20px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ fontSize: '1.05rem', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <h3 style={{ fontSize: '1.05rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Sparkles size={18} />
                     <span>Facilities & Amenities ({selectedAmenities.length} selected)</span>
                   </h3>
@@ -536,14 +558,14 @@ export default function OwnerDashboard() {
                           borderRadius: '20px',
                           fontSize: '0.82rem',
                           fontWeight: isSelected ? '600' : '400',
-                          border: isSelected ? '1px solid #3b82f6' : '1px solid rgba(255, 255, 255, 0.1)',
-                          background: isSelected ? 'rgba(37, 99, 235, 0.25)' : 'rgba(255, 255, 255, 0.03)',
-                          color: isSelected ? '#93c5fd' : 'var(--text-secondary)',
+                          border: isSelected ? '1px solid var(--accent-primary)' : '1px solid var(--border-subtle)',
+                          background: isSelected ? 'var(--accent-primary-soft)' : '#ffffff',
+                          color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
                         }}
                       >
-                        {isSelected ? <Check size={14} color="#60a5fa" /> : <Plus size={14} color="var(--text-muted)" />}
+                        {isSelected ? <Check size={14} color="var(--accent-primary)" /> : <Plus size={14} color="var(--text-muted)" />}
                         <span>{amenity}</span>
                       </button>
                     );
@@ -554,17 +576,17 @@ export default function OwnerDashboard() {
                 <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                   <input
                     type="text"
-                    className="input-glass"
+                    className="input-clean"
                     placeholder="Add custom facility (e.g. TT Table, Rooftop Cafe, Lift)..."
                     value={customAmenity}
                     onChange={(e) => setCustomAmenity(e.target.value)}
-                    style={{ flex: 1, padding: '7px 12px', fontSize: '0.85rem' }}
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem' }}
                   />
                   <button
                     type="button"
                     onClick={handleAddCustomAmenity}
                     className="btn-secondary"
-                    style={{ padding: '7px 16px', fontSize: '0.82rem', gap: '4px' }}
+                    style={{ padding: '8px 16px', fontSize: '0.82rem', gap: '4px' }}
                   >
                     <Plus size={14} />
                     <span>Add</span>
@@ -574,17 +596,17 @@ export default function OwnerDashboard() {
 
               {/* Section 3: Dynamic Room Builder & Live Beds */}
               <div style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid var(--border-glass)',
+                background: 'var(--bg-subtle)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '14px',
-                padding: '18px',
+                padding: '20px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '14px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.05rem', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h3 style={{ fontSize: '1.05rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Bed size={18} />
                       <span>Room Configurations & Bed Inventory ({rooms.length} Room Types)</span>
                     </h3>
@@ -597,7 +619,7 @@ export default function OwnerDashboard() {
                     type="button"
                     onClick={handleAddRoom}
                     className="btn-secondary"
-                    style={{ padding: '6px 14px', fontSize: '0.82rem', gap: '6px' }}
+                    style={{ padding: '6px 14px', fontSize: '0.82rem', gap: '6px', background: '#ffffff' }}
                   >
                     <Plus size={15} />
                     <span>+ Add Room Type</span>
@@ -609,13 +631,14 @@ export default function OwnerDashboard() {
                     <div
                       key={room.id}
                       style={{
-                        background: 'rgba(15, 23, 42, 0.75)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: '#ffffff',
+                        border: '1px solid var(--border-subtle)',
                         borderRadius: '12px',
                         padding: '16px',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '12px',
+                        boxShadow: 'var(--shadow-sm)',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -625,8 +648,8 @@ export default function OwnerDashboard() {
                             fontWeight: '700',
                             padding: '3px 8px',
                             borderRadius: '6px',
-                            background: 'rgba(59, 130, 246, 0.15)',
-                            color: '#60a5fa',
+                            background: 'var(--accent-primary-soft)',
+                            color: 'var(--accent-primary)',
                           }}>
                             Room Type #{idx + 1}
                           </span>
@@ -642,7 +665,7 @@ export default function OwnerDashboard() {
                             style={{
                               background: 'transparent',
                               border: 'none',
-                              color: '#ef4444',
+                              color: '#dc2626',
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
@@ -666,7 +689,7 @@ export default function OwnerDashboard() {
                           <input
                             type="text"
                             required
-                            className="input-glass"
+                            className="input-clean"
                             placeholder="e.g. Double Sharing AC"
                             value={room.room_type}
                             onChange={(e) => handleRoomChange(idx, 'room_type', e.target.value)}
@@ -679,7 +702,7 @@ export default function OwnerDashboard() {
                             Sharing Configuration *
                           </label>
                           <select
-                            className="input-glass"
+                            className="input-clean"
                             value={room.sharing}
                             onChange={(e) => handleRoomChange(idx, 'sharing', e.target.value)}
                             style={{ padding: '8px 10px', fontSize: '0.85rem' }}
@@ -698,7 +721,7 @@ export default function OwnerDashboard() {
                           <input
                             type="number"
                             required
-                            className="input-glass"
+                            className="input-clean"
                             placeholder="e.g. 7500"
                             value={room.rent}
                             onChange={(e) => handleRoomChange(idx, 'rent', e.target.value)}
@@ -709,12 +732,13 @@ export default function OwnerDashboard() {
 
                       {/* Bed Numbers Editor & Live Badges */}
                       <div style={{
-                        background: 'rgba(0, 0, 0, 0.25)',
+                        background: 'var(--bg-subtle)',
                         borderRadius: '8px',
                         padding: '10px 12px',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '8px',
+                        border: '1px solid var(--border-subtle)',
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -728,9 +752,9 @@ export default function OwnerDashboard() {
                                   fontSize: '0.72rem',
                                   padding: '2px 8px',
                                   borderRadius: '4px',
-                                  background: 'rgba(16, 185, 129, 0.15)',
-                                  color: '#34d399',
-                                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                                  background: 'rgba(16, 185, 129, 0.12)',
+                                  color: '#059669',
+                                  border: '1px solid rgba(16, 185, 129, 0.25)',
                                   fontWeight: '600',
                                 }}
                               >
@@ -743,11 +767,11 @@ export default function OwnerDashboard() {
                         <input
                           type="text"
                           required
-                          className="input-glass"
+                          className="input-clean"
                           placeholder="e.g. 201-A, 201-B"
                           value={room.bedsText}
                           onChange={(e) => handleRoomChange(idx, 'bedsText', e.target.value)}
-                          style={{ padding: '6px 10px', fontSize: '0.82rem' }}
+                          style={{ padding: '6px 10px', fontSize: '0.82rem', background: '#ffffff' }}
                         />
                       </div>
                     </div>
